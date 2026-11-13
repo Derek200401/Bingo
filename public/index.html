@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#121212" />
+  <title>MLBB MYTHIC | Bingo Card</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Russo+One&display=swap" rel="stylesheet" />
+  <style>
+    /* --- SOLID DARK COLORS (WALANG GRADIENT) --- */
+    :root {
+      --bg-body: #121212;
+      --bg-panel: #1e1e1e;
+      --bg-cell: #2a2a2a;
+      
+      --gold: #facc15;
+      --gold-hover: #eab308;
+      --purple: #9333ea;
+      --purple-hover: #7e22ce;
+      
+      --border-light: #3f3f46;
+      --border-dark: #27272a;
+      --text-main: #f4f4f5;
+      --text-muted: #a1a1aa;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Poppins', system-ui, sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    /* HEADER */
+    .hero { text-align: center; margin-bottom: 32px; }
+    .title {
+      font-family: 'Russo One', sans-serif;
+      font-size: clamp(2rem, 6vw, 3rem);
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .subtitle {
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      color: var(--purple);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* MAIN LAYOUT */
+    .main-layout {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 32px;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    /* PROFILE / IMAGE SECTION */
+    .profile-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      background-color: var(--bg-panel);
+      padding: 24px;
+      border-radius: 20px;
+      border: 2px solid var(--border-light);
+      width: 100%;
+      max-width: 300px; /* Pinalaki nang bahagya */
+    }
+
+    .image-preview-container {
+      width: 100%;
+      aspect-ratio: 1; /* Ginawang perfect square para mukhang profile pic */
+      background-color: var(--bg-cell);
+      border: 2px dashed var(--border-light);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer; /* Nagiging clickable */
+      transition: border-color 0.2s, border-style 0.2s;
+    }
+
+    .image-preview-container:hover {
+      border-color: var(--purple);
+    }
+
+    .image-preview-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* Para hindi mabanat ang mukha */
+      display: none; 
+    }
+
+    .image-preview-container .placeholder-text {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 20px;
+      pointer-events: none;
+    }
+
+    /* BUTTONS */
+    .btn {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 14px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+      border: 2px solid transparent;
+      transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
+    }
+
+    .btn:active:not(:disabled) { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-upload {
+      background-color: var(--bg-cell);
+      color: var(--text-main);
+      border-color: var(--border-light);
+    }
+    .btn-upload:hover { border-color: var(--purple); }
+
+    .btn-primary {
+      background-color: var(--gold);
+      color: #121212;
+    }
+    .btn-primary:hover:not(:disabled) { background-color: var(--gold-hover); }
+
+    .btn-ghost {
+      background-color: transparent;
+      color: var(--text-main);
+      border-color: var(--border-light);
+    }
+    .btn-ghost:hover:not(:disabled) { background-color: var(--bg-cell); }
+
+    /* BINGO CARD SECTION */
+    .card-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .card-wrap {
+      background-color: var(--bg-panel);
+      padding: 12px;
+      border-radius: 24px;
+      border: 2px solid var(--purple);
+    }
+
+    .card {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      background-color: var(--bg-body);
+      padding: 12px;
+      border-radius: 16px;
+    }
+
+    .header-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 1;
+      font-family: 'Russo One', sans-serif;
+      font-size: clamp(1rem, 4vw, 1.4rem);
+      color: var(--gold);
+    }
+
+    /* CELLS */
+    .cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 1;
+      padding: 0;
+      border: 2px solid var(--border-dark);
+      border-radius: 10px;
+      background-color: var(--bg-cell);
+      color: var(--text-main);
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(0.9rem, 3.5vw, 1.25rem);
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .cell:hover:not(.free) {
+      border-color: var(--gold);
+      background-color: #333333;
+    }
+
+    .cell.marked {
+      background-color: var(--gold);
+      color: #121212;
+      border-color: var(--gold-hover);
+    }
+
+    .cell.free {
+      background-color: var(--bg-panel);
+      border-color: var(--purple);
+      color: var(--purple);
+      cursor: default;
+      font-size: clamp(0.65rem, 2.5vw, 0.85rem);
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+    }
+
+    .status {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    .status.error { color: #ef4444; }
+
+    /* RESPONSIVE (Mobile) */
+    @media (max-width: 768px) {
+      .main-layout {
+        flex-direction: column;
+        align-items: center;
+      }
+      .profile-section {
+        max-width: 100%;
+        flex-direction: column;
+        padding: 20px;
+      }
+      .image-preview-container {
+        width: 220px; /* Mas malaki at klaro sa mobile */
+        height: 220px;
+        border-radius: 20px;
+      }
+      .btn-upload {
+        width: 220px; /* Pantay sa lapad ng image */
+      }
+      .card-section {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="hero">
+    <h1 class="title">MLBB MYTHIC</h1>
+    <p class="subtitle">Bingo Card</p>
+  </header>
+
+  <div class="main-layout">
+    
+    <!-- IMAGE UPLOAD SECTION -->
+    <div class="profile-section">
+      <!-- Ang container ay clickable para mapalitan ang image kahit may image na -->
+      <div class="image-preview-container" id="imageContainer" onclick="document.getElementById('imageUpload').click()">
+        <span class="placeholder-text" id="placeholderText">I-tap para mag-upload ng larawan</span>
+        <img id="profileImage" alt="User Image" />
+      </div>
+      
+      <!-- Hidden File Input -->
+      <input type="file" id="imageUpload" accept="image/*" style="display: none;" />
+      
+      <!-- Trigger Button (Mawawala kapag may image na) -->
+      <button class="btn btn-upload" id="uploadBtn" onclick="document.getElementById('imageUpload').click()">
+        Upload Image
+      </button>
+    </div>
+
+    <!-- BINGO CARD SECTION -->
+    <div class="card-section">
+      <div class="card-wrap">
+        <div class="card" id="card"></div>
+      </div>
+      
+      <div class="controls">
+        <button class="btn btn-primary" id="generateBtn" type="button">Generate Card</button>
+        <button class="btn btn-ghost" id="clearBtn" type="button">Clear Marks</button>
+      </div>
+      
+      <p class="status" id="status"></p>
+    </div>
+
+  </div>
+
+  <script>
+    const COLS = [
+      { letter: 'B', min: 1,  max: 15 },
+      { letter: 'I', min: 16, max: 30 },
+      { letter: 'N', min: 31, max: 45 },
+      { letter: 'G', min: 46, max: 60 },
+      { letter: 'O', min: 61, max: 75 },
+    ];
+
+    const cardEl = document.getElementById('card');
+    const generateBtn = document.getElementById('generateBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const statusEl = document.getElementById('status');
+    
+    // Image Upload Logic
+    const imageUpload = document.getElementById('imageUpload');
+    const profileImage = document.getElementById('profileImage');
+    const placeholderText = document.getElementById('placeholderText');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const imageContainer = document.getElementById('imageContainer');
+
+    imageUpload.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          profileImage.src = event.target.result;
+          profileImage.style.display = 'block';
+          
+          // Itago ang placeholder at button
+          placeholderText.style.display = 'none';
+          uploadBtn.style.display = 'none'; 
+          
+          // Gawing solid border para mukhang polished
+          imageContainer.style.borderStyle = 'solid';
+          imageContainer.style.borderColor = 'var(--purple)';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function showStatus(msg, isError) {
+      statusEl.textContent = msg || '';
+      statusEl.classList.toggle('error', !!isError);
+    }
+
+    function render(numbers) {
+      cardEl.innerHTML = '';
+      COLS.forEach(c => {
+        const h = document.createElement('div');
+        h.className = 'header-cell';
+        h.textContent = c.letter;
+        cardEl.appendChild(h);
+      });
+
+      for (let row = 0; row < 5; row++) {
+        for (let col = 0; col < 5; col++) {
+          const cell = document.createElement('button');
+          cell.type = 'button';
+          cell.className = 'cell';
+
+          if (row === 2 && col === 2) {
+            cell.classList.add('free');
+            cell.textContent = 'FREE';
+            cell.disabled = true;
+          } else {
+            const num = numbers[col][row];
+            cell.textContent = num;
+            cell.setAttribute('aria-label', `${COLS[col].letter} ${num}`);
+            cell.addEventListener('click', () => cell.classList.toggle('marked'));
+          }
+          cardEl.appendChild(cell);
+        }
+      }
+    }
+
+    async function newCard() {
+      generateBtn.disabled = true;
+      showStatus('Generating...');
+      try {
+        const res = await fetch('/api/card', { method: 'POST' });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || 'Failed to generate');
+        }
+        const data = await res.json();
+        render(data.card);
+        showStatus(`Card #${data.totalUsed} generated`);
+      } catch (e) {
+        showStatus(e.message, true);
+      } finally {
+        generateBtn.disabled = false;
+      }
+    }
+
+    generateBtn.addEventListener('click', newCard);
+    clearBtn.addEventListener('click', () => {
+      document.querySelectorAll('.cell.marked').forEach(c => c.classList.remove('marked'));
+    });
+
+    // Initial load
+    newCard();
+  </script>
+</body>
+</html>
